@@ -11,8 +11,10 @@ from tmt.steps.provision.base import ProvisionBase
 from tmt.utils import ConvertError, SpecificationError, GeneralError
 
 from click import echo
-from shlex import quote
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    import urlparse
 
 
 # DATA[*]:
