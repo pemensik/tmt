@@ -20,12 +20,12 @@ class ExecutorShell(ExecutorBase):
         self.step.sync_runner()
 
         self.step.execute('nohup',
-            f'{self.step.workdir}/{RUNNER}',
+            '{self.step.workdir}/{RUNNER}'.format(**locals()),
             '-v',
             plan_workdir,
             self.type,
-            f'{self.step.workdir}/stdout.log',
-            f'{self.step.workdir}/stderr.log')
+            '{self.step.workdir}/stdout.log'.format(**locals()),
+            '{self.step.workdir}/stderr.log'.format(**locals()))
 
     # API
     def requires(self):

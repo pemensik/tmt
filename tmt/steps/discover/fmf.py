@@ -51,8 +51,8 @@ class DiscoverFmf(tmt.steps.discover.DiscoverPlugin):
         # Clone provided git repository
         if self.repository:
             self.info('repository', self.repository, 'green')
-            self.debug(f"Clone '{self.repository}' to '{testdir}'.")
-            self.run(f'git clone {self.repository} {testdir}')
+            self.debug("Clone '{self.repository}' to '{testdir}'.".format(**locals()))
+            self.run('git clone {self.repository} {testdir}'.format(**locals()))
         # Copy current directory to workdir
         else:
             directory = self.step.plan.run.tree.root
@@ -62,22 +62,22 @@ class DiscoverFmf(tmt.steps.discover.DiscoverPlugin):
         # Checkout revision if requested
         if self.revision:
             self.info('revision', self.revision, 'green')
-            self.debug(f"Checkout revision '{self.revision}'.")
-            self.run(f"git checkout -f {self.revision}", cwd=testdir)
+            self.debug("Checkout revision '{self.revision}'.".format(**locals()))
+            self.run("git checkout -f {self.revision}".format(**locals()), cwd=testdir)
         # Show filters if provided
         if self.filters:
             for filter_ in self.filters:
                 self.info('filter', filter_, 'green')
         # Initialize the metadata tree
-        self.debug(f"Check metadata tree in '{testdir}'.")
+        self.debug("Check metadata tree in '{testdir}'.".format(**locals()))
         # Nothing more to do here when in dry mode
         if self.opt('dry'):
             return []
         tests = tmt.Tree(testdir).tests(filters=self.filters)
         # Modify test names and paths to make them unique
         for test in tests:
-            test.name = f"/{self.name}{test.name}"
-            test.path = f"/{self.name}/tests{test.path}"
+            test.name = "/{self.name}{test.name}".format(**locals())
+            test.path = "/{self.name}/tests{test.path}".format(**locals())
         # Summary of selected tests, test list in verbose mode
         self.info('tests', listed(len(tests), 'test') + ' selected', 'green')
         for test in tests:

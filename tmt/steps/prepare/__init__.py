@@ -40,7 +40,7 @@ class Prepare(tmt.steps.Step):
             script = data['script']
 
             if script:
-                self.verbose('    Prepare', f"{how} = '{script}", 'yellow')
+                self.verbose('    Prepare', "{how} = '{script}".format(**locals()), 'yellow')
 
                 try:
                     self.plan.provision.prepare(how, script)
@@ -48,12 +48,12 @@ class Prepare(tmt.steps.Step):
                     raise SpecificationError('NYI: cannot currently run this preparator.')
 
             else:
-                self.debug('Note', f"No path/script defined for prepare({how})", 'yellow')
+                self.debug('Note', "No path/script defined for prepare({how})".format(**locals()), 'yellow')
 
         # TODO: find a better way
         packages = self.plan.execute.requires()
         if packages:
-            self.plan.provision.prepare('shell', f"sleep 1; set -x; nohup bash -c 'dnf install -y {' '.join(packages)}' 1>/root/prepare.log 2>&1 && exit 0; cat prepare.log; exit 1")
+            self.plan.provision.prepare('shell', "sleep 1; set -x; nohup bash -c 'dnf install -y {' '.join(packages)}' 1>/root/prepare.log 2>&1 && exit 0; cat prepare.log; exit 1".format(**locals()))
             self.plan.provision.copy_from_guest('/root/prepare.log')
 
     def set_default(self, i, where, default):

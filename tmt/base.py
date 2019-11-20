@@ -73,7 +73,7 @@ class Node(tmt.utils.Common):
             return tmt.utils.dictionary_to_yaml(data)
         else:
             raise tmt.utils.GeneralError(
-                f"Invalid test export format '{format_}'.")
+                "Invalid test export format '{format_}'.".format(**locals()))
 
 
 class Test(Node):
@@ -530,7 +530,7 @@ class Run(tmt.utils.Common):
         self.tree = tree if tree else tmt.Tree('.')
         # Prepare the workdir
         self._workdir_init(id_)
-        self.debug(f"Using tree '{self.tree.root}'.")
+        self.debug("Using tree '{self.tree.root}'.".format(**locals()))
         self._plans = None
 
     @property

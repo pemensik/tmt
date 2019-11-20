@@ -39,7 +39,7 @@ class Step(tmt.utils.Common):
             self.data = [self.data]
         # Shout about invalid configuration
         elif not isinstance(self.data, list):
-            raise GeneralError(f"Invalid '{self}' config in '{self.plan}'.")
+            raise GeneralError("Invalid '{self}' config in '{self.plan}'.".format(**locals()))
 
         # Final sanity checks
         for data in self.data:
@@ -48,7 +48,7 @@ class Step(tmt.utils.Common):
                 data['how'] = self.how
             # Ensure that each config has a name
             if 'name' not in data and len(self.data) > 1:
-                raise GeneralError(f"Missing '{self}' name in '{self.plan}'.")
+                raise GeneralError("Missing '{self}' name in '{self.plan}'.".format(**locals()))
         # Get or set the status
         if self.status is None:
             self.status('todo')

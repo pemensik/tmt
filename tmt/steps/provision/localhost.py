@@ -23,7 +23,7 @@ class ProvisionLocalhost(ProvisionBase):
         # Playbook paths should be relative to the metadata tree root
         playbook = os.path.join(self.step.plan.run.tree.root, what)
         # Run ansible against localhost, in verbose mode, enable --become
-        self.run(f'ansible-playbook -vb -c local -i localhost, {playbook}')
+        self.run('ansible-playbook -vb -c local -i localhost, {playbook}'.format(**locals()))
 
     def _prepare_shell(self, what):
         """ Run ansible on localhost """
@@ -36,4 +36,4 @@ class ProvisionLocalhost(ProvisionBase):
             self._prepare_map[how](what)
         except AttributeError as e:
             raise SpecificationError(
-                f"Prepare method '{how}' is not supported.")
+                "Prepare method '{how}' is not supported.".format(**locals()))

@@ -36,7 +36,7 @@ class Discover(tmt.steps.Step):
                 self.steps.append(DiscoverShell(data, step=self))
             else:
                 raise tmt.utils.SpecificationError(
-                    f"Unknown discover method '{data['how']}'.")
+                    "Unknown discover method '{data['how']}'.".format(**locals()))
 
     def show(self):
         """ Show discover details """

@@ -67,7 +67,7 @@ class ProvisionVagrant(ProvisionBase):
     def go(self):
         """ Execute actual provisioning """
         self.init()
-        self.info(f'Provisioning {self.executable}, {self.vf_name}', self.vf_read())
+        self.info('Provisioning {self.executable}, {self.vf_name}'.format(**locals()), self.vf_read())
         return self.run_vagrant('up')
 
     def execute(self, *args, **kwargs):
@@ -92,16 +92,16 @@ class ProvisionVagrant(ProvisionBase):
 
     def copy_from_guest(self, target):
         """ copy file/folder from guest to host's copy dir """
-        beg = f"[[ -d '{target}' ]]"
+        beg = "[[ -d '{target}' ]]".format(**locals())
         end = 'exit 0; set -xe; '
 
-        isdir = f"{beg} || {end}"
-        isntdir = f"{beg} && {end}"
+        isdir = "{beg} || {end}".format(**locals())
+        isntdir = "{beg} && {end}".format(**locals())
 
-        target_dir = f'{self.provision_dir}/copy/{target}'
-        self.execute(isdir + self.cmd_mkcp(target_dir, f'{target}/.'))
+        target_dir = '{self.provision_dir}/copy/{target}'.format(**locals())
+        self.execute(isdir + self.cmd_mkcp(target_dir, '{target}/.'.format(**locals())))
 
-        target_dir = f'$(dirname "{self.provision_dir}/copy/{target}")'
+        target_dir = '$(dirname "{self.provision_dir}/copy/{target}")'.format(**locals())
         self.execute(isntdir + self.cmd_mkcp(target_dir, target))
 
         self.sync_workdir_from_guest()
@@ -133,9 +133,9 @@ class ProvisionVagrant(ProvisionBase):
 
             self.add_config_block(cmd,
                 name,
-                f'become = true',
-                f'become_user = "root"',
-                f'playbook = "{what}"')
+                'become = true'.format(**locals()),
+                'become_user = "root"'.format(**locals()),
+                'playbook = "{what}"'.format(**locals()))
            #TODO: run: 'never'
 
         else:
@@ -154,7 +154,7 @@ class ProvisionVagrant(ProvisionBase):
 
             # maybe?
 
-        return self.run_vagrant(cmd, f'--{cmd}-with', name)
+        return self.run_vagrant(cmd, '--{cmd}-with'.format(**locals()), name)
 
 
     ## Additional API ##
@@ -184,7 +184,7 @@ class ProvisionVagrant(ProvisionBase):
 
     def clean(self):
         """ remove box and base box """
-        return self.run_vagrant('box', 'remove', '-f', self.data['box'])
+        return self.run_vagrant('box', 'remove', '-', self.data['.format(**locals())box'])
         # TODO: libvirt storage removal?
 
     def validate(self):
@@ -198,11 +198,11 @@ class ProvisionVagrant(ProvisionBase):
     def plugin_install(self, name):
         """ Install a vagrant plugin if it's not installed yet.
         """
-        plugin = f'{self.executable}-{name}'
+        plugin = '{self.executable}-{name}'.format(**locals())
         command = ['plugin', 'install']
         try:
             # is it already present?
-            return self.run(f"bash -c \"{self.executable} {command[0]} list | grep '^{plugin}'\"")
+            return self.run("bash -c \".format(**locals()){self.executable} {command[0]} list | grep '^{plugin}'\"")
         except GeneralError:
             pass
 
@@ -214,7 +214,7 @@ class ProvisionVagrant(ProvisionBase):
             # by getting the output manually
             command = ' '.join([self.executable] + command + [plugin])
 
-            out, err = self.run(f"bash -c \"{command}; :\"")
+            out, err = self.run("bash -c \".format(**locals()){command}; :\"")
 
             if re.search(r"Conflicting dependency chains:", err) is None:
                 raise error
@@ -247,19 +247,19 @@ class ProvisionVagrant(ProvisionBase):
                 raise SpecificationError("NYI: QCOW2 image")
 
             else:
-                raise SpecificationError(f"Image format not recognized: {image}")
+                raise SpecificationError("Image format not recognized: {image}".format(**locals()))
 
         else:
             self.set_default('box', image)
             self.data['image'] = None
 
         for x in ('how', 'box', 'image'):
-            self.info(f'    {x}', self.data[x])
+            self.info('    {x}'.format(**locals()), self.data[x])
 
     def add_how(self):
         """ Add provider (in Vagrant-speak) specifics """
         getattr(self,
-            f"how_{self.data['how']}",
+            "how_{self.data['how']}".format(**locals()),
             lambda: 'generic',
             )()
 
@@ -372,14 +372,14 @@ class ProvisionVagrant(ProvisionBase):
         """
         config_str = ''
         for c in config:
-            config_str += f'{block}.{c}; '
+            config_str += '{block}.{c}; '.format(**locals())
 
-        self.add_config('vm', f"{name} '{block}' do |{block}| {config_str}end")
+        self.add_config('vm', "{name} '{block}' do |{block}| {config_str}end".format(**locals()))
 
     def add_config_value(self, type, key, value):
         """ Add config = value into Vagrantfile
         """
-        self.add_config(type, f"{key} = '{value}'")
+        self.add_config(type, "{key} = '{value}'".format(**locals()))
 
     def add_config(self, type, *config):
         """ Add config entry into Vagrantfile right before last 'end',
@@ -398,9 +398,9 @@ class ProvisionVagrant(ProvisionBase):
         elif len(config) == 0:
             raise RuntimeError("config has no definition")
         else:
-            config = f'{config[0]} ' + ', '.join(config[1:])
+            config = '{config[0]} '.format(**locals()) + ', '.join(config[1:])
 
-        self.info('Adding into Vagrantfile', f"{type}.{config}")
+        self.info('Adding into Vagrantfile', "{type}.{config}".format(**locals()))
 
         vf_tmp = self.vf_read()
 
@@ -412,7 +412,7 @@ class ProvisionVagrant(ProvisionBase):
                 break
 
         vf_tmp = vf_tmp[:i] \
-            + [self.config_prefix + f"{type}." + config] \
+            + [self.config_prefix + "{type}.".format(**locals()) + config] \
             + vf_tmp[i:]
 
         self.vf_write(vf_tmp)
@@ -478,7 +478,7 @@ class ProvisionVagrant(ProvisionBase):
         else:
             val = self.hr(val)
 
-        emsg = lambda: RuntimeError(f"Message type unknown: {mtype}")
+        emsg = lambda: RuntimeError("Message type unknown: {mtype}".format(**locals()))
 
         if val:
             getattr(self.super,
@@ -511,7 +511,7 @@ class ProvisionVagrant(ProvisionBase):
         except:
             eol = ''
 
-        return f'{val}{eol}'
+        return '{val}{eol}'.format(**locals())
 
     def set_default(self, where, default):
         if not (where in self.data and self.data[where]):
@@ -528,7 +528,7 @@ class ProvisionVagrant(ProvisionBase):
     def cmd_mkcp(self, target_dir, target):
         target_dir = self.quote(target_dir)
         target = self.quote(target)
-        return f'mkdir -p {target_dir}; cp -vafr {target} {target_dir}'
+        return 'mkdir -p {target_dir}; cp -vafr {target} {target_dir}'.format(**locals())
 
     def is_uri(self, uri):
         return getattr(urlparse(uri),
@@ -536,7 +536,7 @@ class ProvisionVagrant(ProvisionBase):
             None)
 
     def quote(self, string):
-        return f'"{string}"'
+        return '"{string}"'.format(**locals())
 
     def kv(self, key, val):
-        return f'{key}: "{val}"'
+        return '{key}: "{val}"'.format(**locals())

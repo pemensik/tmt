@@ -103,8 +103,8 @@ class Common(object):
             if isinstance(value, str):
                 lines = value.splitlines()
                 if len(lines) > 1:
-                    value = ''.join([f"\n{deeper}{line}" for line in lines])
-            message = f'{key}: {value}'
+                    value = ''.join(["\n{deeper}{line}".format(**locals()) for line in lines])
+            message = '{key}: {value}'.format(**locals())
         return indent + message
 
     def _log(self, message):
@@ -198,22 +198,22 @@ class Common(object):
         try:
             return self._run(command, cwd=cwd or self.workdir)
         except (OSError, subprocess.CalledProcessError) as error:
-            raise GeneralError(f"{message}\n{error}")
+            raise GeneralError("{message}\n{error}".format(**locals()))
 
     def read(self, path):
         """ Read a file from the workdir """
         path = os.path.join(self.workdir, path)
-        self.debug(f"Read file '{path}'.")
+        self.debug("Read file '{path}'.".format(**locals()))
         try:
             with open(path) as data:
                 return data.read()
         except OSError as error:
-            raise GeneralError(f"Failed to read '{path}'.\n{error}")
+            raise GeneralError("Failed to read '{path}'.\n{error}".format(**locals()))
 
     def write(self, path, data):
         """ Write a file to the workdir """
         path = os.path.join(self.workdir, path)
-        self.debug(f"Write file '{path}'.")
+        self.debug("Write file '{path}'.".format(**locals()))
         # Dry mode
         if self.opt('dry'):
             return
@@ -221,13 +221,13 @@ class Common(object):
             with open(path, 'w') as target:
                 return target.write(data)
         except OSError as error:
-            raise GeneralError(f"Failed to write '{path}'.\n{error}")
+            raise GeneralError("Failed to write '{path}'.\n{error}".format(**locals()))
 
     def status(self, status=None):
         """ Get and set current status, store in workdir """
         # Check for valid values
         if status and status not in ['todo', 'done', 'going']:
-            raise GeneralError(f"Invalid status '{status}'.")
+            raise GeneralError("Invalid status '{status}'.".format(**locals()))
         # Store status
         if status:
             self.write('status.txt', status + '\n')
@@ -354,7 +354,7 @@ def dictionary_to_yaml(data):
 
 def dict_to_shell(data):
     """ Convert dictionary to list of key=value pairs """
-    return [f"{key}={shlex.quote(str(value))}" for key, value in data.items()]
+    return ["{key}={shlex.quote(str(value))}".format(**locals()) for key, value in data.items()]
 
 
 def verdict(decision, comment=None, good='pass', bad='fail', problem='warn'):

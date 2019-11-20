@@ -80,7 +80,7 @@ class Execute(tmt.steps.Step):
                 failed += 1
         passed = listed(passed, 'test')
         failed = listed(failed, 'test')
-        message = f"{passed} passed, {failed} failed"
+        message = "{passed} passed, {failed} failed".format(**locals())
         self.info('result', message, color='green', shift=1)
 
 
@@ -88,7 +88,7 @@ class Execute(tmt.steps.Step):
         """ Place the runner script to workdir  """
         # Detect location of the runner
         script_path = os.path.join(os.path.dirname(__file__), RUNNER)
-        self.debug(f"Copy '{script_path}' to '{self.workdir}'.")
+        self.debug("Copy '{script_path}' to '{self.workdir}'.".format(**locals()))
         # Nothing more to do in dry mode
         if self.opt('dry'):
             return

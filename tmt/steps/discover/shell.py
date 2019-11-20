@@ -31,14 +31,14 @@ class DiscoverShell(tmt.steps.discover.DiscoverPlugin):
                 name = data.pop('name')
             except KeyError:
                 raise tmt.utils.SpecificationError(
-                    f"Missing test name in '{self.step.plan.name}'.")
+                    "Missing test name in '{self.step.plan.name}'.".format(**locals()))
             # Make sure that the test script is defined
             if 'test' not in data:
                 raise tmt.utils.SpecificationError(
-                    f"Missing test script in '{self.step.plan.name}'.")
+                    "Missing test script in '{self.step.plan.name}'.".format(**locals()))
             # Adjust path if necessary (defaults to '.')
             try:
-                data['path'] = f"/{self.name}/tests{data['path']}"
+                data['path'] = "/{self.name}/tests{data['path']}".format(**locals())
                 path = True
             except KeyError:
                 data['path'] = '.'
